@@ -1,0 +1,116 @@
+{
+	"Open form": {
+		"prefix": [
+			"openfrm",
+			"of"
+		],
+		"body": [
+			"!|Open Form|${1:formName}|",
+			"|Form Mode|EntityType|Enter!|",
+			"|${2|New,Edit,View|}|${3:entityType}|>>${4:formVariableName}|"
+		],
+		"description": "Open a Fusion form."
+	},
+	"Close form": {
+		"prefix": [
+			"closefrm",
+			"cf"
+		],
+		"body": [
+			"!|Close form|"
+		],
+		"description": "Close the current form."
+	},
+	"Close form with confirmation": {
+		"prefix": [
+			"closefrm",
+			"cf"
+		],
+		"body": [
+			"!|Close form with confirmation|",
+			"|Go!|",
+			"||"
+		],
+		"description": "Close the current form and and yes to the are your sure nag."
+	},
+	"Log out user": {
+		"prefix": [
+			"logout",
+			"lo"
+		],
+		"body": [
+			"!|Logout user|"
+		],
+		"description": "Logout the current user."
+	},
+	"Log in user": {
+		"prefix": [
+			"login",
+			"li"
+		],
+		"body": [
+			"!|Login user|"
+		],
+		"description": "Login using the default user (demo)."
+	},
+	"Set form fields": {
+		"prefix": [
+			"setform",
+			"sff"
+		],
+		"body": [
+			"!|Set Form Fields|",
+			"|${1:fieldList}|Go!|",
+			"|${2:fieldValue}|True|"
+		],
+		"description": "Update fields on the current form"
+	},
+	"Inspect form fields": {
+		"prefix": [
+			"iff",
+			"inspff"
+		],
+		"body": [
+			"!|Inspect form fields|",
+			"|${1:fieldList}|",
+			"|${2:expectedValue}|"
+		],
+		"description": "Inspect the field values on the current form"
+	},
+	"anchor": {
+		"prefix": [
+			"!a"
+		],
+		"body": [
+			"!anchor ${1:anchorText}"
+		],
+		"description": "Insert and anchor point"
+	},
+	"clktbsub": {
+		"prefix": [
+			"clktbsub"
+		],
+		"body": [
+			"!|Click ToolBar Button|${1|New,Edit,View|}|Menu Item|${2:subMenuText}|"
+		],
+		"description": "Click the specified toolbar button and then click the sub menu item"
+	},
+	"clktb": {
+		"prefix": [
+			"clktb"
+		],
+		"body": [
+			"!|Click ToolBar Button|${1|New,Edit,View|}|"
+		],
+		"description": "Click the specified toolbar button"
+	},
+	"chkfld": {
+		"prefix": [
+			"chkfld"
+		],
+		"body": [
+			"!|Check|that the field|${1:fieldName}|is ${2|enabled,readonly,visible|}|${3|True,False|}|"
+		],
+		"description": "Check a field state"
+	}
+}
