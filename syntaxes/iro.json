@@ -1,0 +1,282 @@
+#################################################################
+## Iro
+################################################################ 
+## https://eeyo.io/iro/
+## * Press Ctrl + '+'/'-' To Zoom in
+## * Press Ctrl + S to save and recalculate... 
+## * Documents are saved to web storage.
+## * Only one save slot supported.
+## * Matches cannot span lines.
+## * Unicode chars must be defined in \u0000 to \uffff format.
+## * All matches must be contained by a single group ( ... )
+## * Look behinds not permitted, (?<= or (?<!
+## * Look forwards are permitted (?= or (?!
+## * Constants are defined as __my_const = (......)
+## * The \= format allows unescaped regular expressions
+## * Constants referenced by match \= $${__my_const}
+## * Constants can reference other constants
+## * You are free to delete all the default scopes.
+## * Twitter : ainslec , Web: http://eeyo.io/iro
+##
+################################################################
+
+name                   = fit
+file_extensions []     = fit;
+
+################################################################
+## Constants
+################################################################
+__MY_CONSTANT1 \= (\b[a-z][a-z0-9]*)
+__MY_CONSTANT \= (True|true|TRUE|Go!|blank|new|Enter!)
+
+################################################################
+## Styles
+################################################################
+
+styles [] {
+
+.comment : style {
+   color                 = light_green
+   italic                = true
+   ace_scope             = comment
+   textmate_scope        = comment
+   pygments_scope        = Comment
+}
+
+.keyword : style {
+   color     = cyan
+   ace_scope             = keyword
+   textmate_scope        = keyword
+   pygments_scope        = Keyword
+}
+
+.variable : style {
+   color     = yellow
+   ace_scope             = variable
+   textmate_scope        = support.constant
+   pygments_scope        = Keyword.Constant
+}
+
+.numeric : style {
+   color                 = gold
+   ace_scope             = constant.numeric
+   textmate_scope        = constant.numeric
+   pygments_scope        = Number
+}
+
+.fixture.start : style {
+   color     = purple
+   ace_scope             = fixture.start
+   textmate_scope        = class
+   pygments_scope        = Name.Attribute
+}
+
+.fixture.delimiter : style {
+   color     = purple
+   ace_scope             = fixture.delimiter
+   textmate_scope        = class
+   pygments_scope        = Name.Attribute
+}
+
+.fitnesse.include : style {
+   color     = light_blue
+   ace_scope             = fitnesse.include
+   textmate_scope        = keyword.control.import
+   pygments_scope        = Keyword.Namespace
+}
+
+.fitnesse.anchor : style {
+   color     = violet_red
+   ace_scope             = fitnesse.anchor
+   textmate_scope        = support.function
+   pygments_scope        = Keyword.Reserved
+}
+
+.punctuation : style {
+   color     = green
+   ace_scope             = punctuation
+   textmate_scope        = variable
+   pygments_scope        = Punctuation
+}
+
+.text : style {
+   color                 = brown
+   ace_scope             = text
+   textmate_scope        = keyword.operator
+   pygments_scope        = String
+}
+
+.illegal : style {
+   color                 = white
+   background_color      = red
+   ace_scope             = invalid
+   textmate_scope        = invalid
+   pygments_scope        = Generic.Error
+}
+
+}
+
+#################################################
+## Parse contexts
+#################################################
+
+contexts [] {
+
+##############################################
+## Main Context - Entry point context
+##############################################
+
+main : context {
+   
+   : include "multi_line_comment" ;
+   : include "fitnesse_comment" ;
+   
+   : pattern {
+      regex          \= (^!anchor\s)
+      styles []       = .fitnesse.anchor;
+   }
+   
+   : pattern {
+      regex          \= (^!include.*)
+      styles []       = .fitnesse.include;
+   }
+   
+   : pattern {
+      regex          \= (>>.*\b)
+      styles []       = .variable;
+   }
+   
+   : pattern {
+      regex          \= (<<.*\b)
+      styles []       = .variable;
+   }
+   
+   : pattern {
+      regex          \= (\.\#)
+      styles []       = .fitnesse.anchor;
+   }
+   
+   : pattern {
+      regex          \= (\!)
+      styles []       = .fixture.start;
+   }
+   
+   : pattern {
+      regex          \= (\|)
+      styles []       = .fixture.delimiter;
+   }
+   
+   : pattern {
+      regex          \= $${__MY_CONSTANT}
+      styles []       = .keyword;
+   }
+   
+   : include "numeric" ;
+   
+   : inline_push {
+      regex          \= (\{)
+      styles []       = .punctuation;
+      : pop {  
+         regex       \= (\})
+         styles []    = .punctuation;
+      }
+      : include "main" ;
+   }
+   
+   : inline_push {
+      regex          \= (\")
+      styles []       = .punctuation;
+      default_style   = .text
+      : pop {
+         regex       \= (\")
+         styles []    = .punctuation;
+      }
+   }
+   
+   : pattern {
+      regex          \= (.)
+      styles []       = .punctuation;
+   }
+   
+   : inline_push {
+      regex          \= (\()
+      styles []       = .punctuation;
+      : pop {
+         regex       \= (\))
+         styles []    = .punctuation;
+      }
+      : include "numeric" ;
+      : pattern {
+         regex       \= (,)
+         styles []    = .punctuation;
+      }
+   }
+   
+   : pattern {
+      regex          \= (//.*)
+      styles []       = .comment;
+   }
+   
+   : pattern {
+      regex          \= (!|.*)
+      styles []       = .keyword;
+   }
+   
+   : pattern {
+      regex          \= (^.#\w+)
+      styles []       = .keyword;
+   }
+   
+   : pattern {
+      regex          \= ([^\s])
+      styles []       = .illegal;
+   }
+   
+}
+
+#################################################
+## End of Contexts
+#################################################
+
+###########################################
+## Numeric Context
+###########################################
+
+numeric : context {
+   : pattern {
+      regex          \= (\b\d+)
+      styles []       = .numeric;
+   }
+}
+
+###########################################
+## Multi Line Comment Context
+###########################################
+
+multi_line_comment : context {
+   description        = multiline
+   : inline_push {
+      regex          \= ({{{)
+      styles []       = .comment;
+      default_style   = .comment
+      : pop {
+         regex       \= (}}})
+         styles []    = .comment;
+      }
+   }
+}
+
+fitnesse_comment : context {
+   description        = multiline
+   : inline_push {
+      regex          \= (''')
+      styles []       = .comment;
+      default_style   = .comment
+      : pop {
+         regex       \= (''')
+         styles []    = .comment;
+      }
+   }
+}
+   
+}
